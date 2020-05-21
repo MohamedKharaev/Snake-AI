@@ -18,7 +18,7 @@ class Board:
 	open_spaces = set()
 	snake = []
 	score = 1
-	direction = RIGHT
+	direction = UP
 
 	class Tile:
 		# Tile object used to represent each square on the board
@@ -55,13 +55,19 @@ class Board:
 		# Meant to run the game until an error is thrown
 		# Currently just creating random moves and updating the board with them
 
-		# TODO : CREATE MOVES BASED ON USER ACTIONS FROM PRESSING KEYS
 		while True:
+			# TODO : CREATE MOVES BASED ON USER ACTIONS FROM PRESSING KEYS
+
+			# Sleep so that the game can be followed when watching it
 			time.sleep(0.25)
+
+			# Selects random move that doesn't go the opposite direction the snake was already going
 			temp = opposite[self.direction]
 			while temp == opposite[self.direction]:
 				temp = choice([LEFT, RIGHT, UP, DOWN])
 			self.direction = temp
+
+			# Moves the snake and prints the board
 			self.move_snake(self.direction)
 			self.render()
 		
