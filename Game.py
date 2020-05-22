@@ -11,7 +11,7 @@ BOARD_SIZE = 6
 
 
 class GameOver(Exception):
-	"""Custom exception class for when snake dies"""
+	"""Custom exception class for when snake dies or if game is won; mainly used to let interface know when to stop"""
 	pass
 
 
@@ -57,7 +57,7 @@ class Board:
 		self.place_random_food()
 		self.render()
 
-	def run(self, direction: int):
+	def run(self, direction=None):
 		# Meant to run the game until an error is thrown
 		# direction parameter moves snake in that direction; any invalid number just moves the snake forward
 
@@ -140,7 +140,7 @@ class Board:
 		if landed_on_food:
 			self.score += 1
 			if self.won():
-				return
+				raise GameOver("You Win")
 			self.place_random_food()
 
 	def won(self):
@@ -159,7 +159,7 @@ class Board:
 
 
 # uncomment this block to run game logic in console; input numbers for direction
-game = Board()
+# game = Board()
 """
 while True:
 	num = eval(input())
