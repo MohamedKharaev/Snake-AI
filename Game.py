@@ -4,7 +4,8 @@ import time
 
 # Directional Static Values
 LEFT, RIGHT, UP, DOWN = 1, 2, 3, 4
-opposite = {LEFT: RIGHT, RIGHT: LEFT, UP: DOWN, DOWN: UP}
+opposite = {LEFT: RIGHT, RIGHT: LEFT, UP: DOWN, DOWN: UP, None: None}
+
 # Size of Game Board (Size x Size)
 BOARD_SIZE = 6
 
@@ -16,7 +17,7 @@ class GameOver(Exception):
 
 class Board:
 	# board contains all Tile objects in a 2x2 array that represents the playing field
-	# open_spaces is a set of tuples that reprsent empty Tile coordinates
+	# open_spaces is a set of tuples that represent empty Tile coordinates
 	# snake is a list containing coordinates of the snakes body in the order that they are meant to be
 	# score is self explanatory (should reflect size of snake)
 	# direction used to keep track of the last direction that the player is chose to move in
@@ -24,7 +25,8 @@ class Board:
 	open_spaces = set()
 	snake = []
 	score = 1
-	direction = UP
+	direction = None
+	game_won = False
 
 	class Tile:
 		# Tile object used to represent each square on the board
@@ -50,7 +52,6 @@ class Board:
 			self.snakeTile = True
 			self.foodTile = False
 
-
 	def __init__(self):
 		self.make_board()
 		self.make_snake()
@@ -65,7 +66,7 @@ class Board:
 			# TODO : CREATE MOVES BASED ON USER ACTIONS FROM PRESSING KEYS
 
 			# Sleep so that the game can be followed when watching it
-			time.sleep(0.25)
+			time.sleep(1)
 
 			# Selects random move that doesn't go the opposite direction the snake was already going
 			temp = opposite[self.direction]
@@ -79,12 +80,11 @@ class Board:
 
 		if direction in [LEFT, RIGHT, UP, DOWN] and direction != opposite[self.direction]:
 			self.direction = direction
-
 		self.move_snake(self.direction)
 		self.render()
-		
+
 	def make_board(self):
-		# Initites board full of Tile objects in correct size and initiates full open_space set
+		# Initiates board full of Tile objects in correct size and initiates full open_space set
 		for i in range(BOARD_SIZE):
 			x = []
 			for j in range(BOARD_SIZE):
@@ -126,7 +126,7 @@ class Board:
 		# First moves snake into new spot and checks if there is food underneath
 		self.snake.append((x, y))
 		landed_on_food = self.board[x][y].foodTile
-		
+
 		# Accounts for a move where there is no food on the tile by removing tail-end of snake
 		if landed_on_food == False:
 			x2, y2 = self.snake.pop(0)
@@ -140,7 +140,12 @@ class Board:
 		# Places food on board if snake ate one
 		if landed_on_food:
 			self.score += 1
+			if self.won():
+				return
 			self.place_random_food()
+
+	def won(self):
+		return self.score == BOARD_SIZE ** 2
 
 	def render(self):
 		# Renders the snake board onto the terminal
@@ -155,7 +160,11 @@ class Board:
 
 
 # uncomment this block to run game logic in console; input numbers for direction
-"""game = Board()
+game = Board()
+"""
 while True:
 	num = eval(input())
-	game.run(num)"""
+	game.run(num)
+	if game.won():
+		break
+"""
