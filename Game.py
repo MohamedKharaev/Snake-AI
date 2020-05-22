@@ -26,7 +26,6 @@ class Board:
 	snake = []
 	score = 1
 	direction = None
-	game_won = False
 
 	class Tile:
 		# Tile object used to represent each square on the board
