@@ -8,6 +8,12 @@ opposite = {LEFT: RIGHT, RIGHT: LEFT, UP: DOWN, DOWN: UP}
 # Size of Game Board (Size x Size)
 BOARD_SIZE = 6
 
+
+class GameOver(Exception):
+	"""Custom exception class for when snake dies"""
+	pass
+
+
 class Board:
 	# board contains all Tile objects in a 2x2 array that represents the playing field
 	# open_spaces is a set of tuples that reprsent empty Tile coordinates
@@ -51,11 +57,11 @@ class Board:
 		self.place_random_food()
 		self.render()
 
-	def run(self):
+	def run(self, direction: int):
 		# Meant to run the game until an error is thrown
-		# Currently just creating random moves and updating the board with them
+		# direction parameter moves snake in that direction; any invalid number just moves the snake forward
 
-		while True:
+		"""while True:
 			# TODO : CREATE MOVES BASED ON USER ACTIONS FROM PRESSING KEYS
 
 			# Sleep so that the game can be followed when watching it
@@ -69,7 +75,13 @@ class Board:
 
 			# Moves the snake and prints the board
 			self.move_snake(self.direction)
-			self.render()
+			self.render()"""
+
+		if direction in [LEFT, RIGHT, UP, DOWN] and direction != opposite[self.direction]:
+			self.direction = direction
+
+		self.move_snake(self.direction)
+		self.render()
 		
 	def make_board(self):
 		# Initites board full of Tile objects in correct size and initiates full open_space set
@@ -109,7 +121,7 @@ class Board:
 
 		# Checks if next move is valid or not, if not, throws error
 		if (x, y) not in self.open_spaces:
-			error("bad move")
+			raise GameOver("Game Over")
 
 		# First moves snake into new spot and checks if there is food underneath
 		self.snake.append((x, y))
@@ -142,5 +154,8 @@ class Board:
 			print()
 
 
-game = Board()
-game.run()
+# uncomment this block to run game logic in console; input numbers for direction
+"""game = Board()
+while True:
+	num = eval(input())
+	game.run(num)"""
