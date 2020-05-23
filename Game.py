@@ -1,6 +1,5 @@
 # Game.py
 from random import randrange, choice
-import time
 
 # Directional Static Values
 LEFT, RIGHT, UP, DOWN = 1, 2, 3, 4
