@@ -60,22 +60,6 @@ class Board:
 		# Meant to run the game until an error is thrown
 		# direction parameter moves snake in that direction; any invalid number just moves the snake forward
 
-		"""while True:
-			# TODO : CREATE MOVES BASED ON USER ACTIONS FROM PRESSING KEYS
-
-			# Sleep so that the game can be followed when watching it
-			time.sleep(1)
-
-			# Selects random move that doesn't go the opposite direction the snake was already going
-			temp = opposite[self.direction]
-			while temp == opposite[self.direction]:
-				temp = choice([LEFT, RIGHT, UP, DOWN])
-			self.direction = temp
-
-			# Moves the snake and prints the board
-			self.move_snake(self.direction)
-			self.render()"""
-
 		if direction in [LEFT, RIGHT, UP, DOWN] and direction != opposite[self.direction]:
 			self.direction = direction
 		self.move_snake(self.direction)
