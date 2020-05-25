@@ -12,19 +12,18 @@ class SnakeInterface:
         self._game_over_message = ""
         self._no_keys_pressed = True
         self._game = Board()
-        self._frame_rate = 7
+        # self._frame_rate = 7 Perhaps we do not need this since we are using clock ticks?
         self._clock = pygame.time.Clock()
         self._surface = None
 
     def run(self):
         """Game loop"""
         pygame.init()
-        clock = pygame.time.Clock()
         self._surface = pygame.display.set_mode((600, 600), pygame.RESIZABLE)
 
         try:
             while self._running:
-                clock.tick(2)
+                self._clock.tick(2)
                 self._no_keys_pressed = True
 
                 # handles various events in PyGame
@@ -56,13 +55,13 @@ class SnakeInterface:
 
         try:
             if event.key == pygame.K_LEFT:
-                self._game.run(1)
+                self._game.run(LEFT)
             elif event.key == pygame.K_RIGHT:
-                self._game.run(2)
+                self._game.run(RIGHT)
             elif event.key == pygame.K_UP:
-                self._game.run(3)
+                self._game.run(UP)
             elif event.key == pygame.K_DOWN:
-                self._game.run(4)
+                self._game.run(DOWN)
         except GameOver as g:
             self._game_over = True
             self._game_over_message = str(g)
