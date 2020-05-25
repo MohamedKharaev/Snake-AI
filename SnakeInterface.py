@@ -1,4 +1,4 @@
-from Game import Board, LEFT, RIGHT, UP, DOWN, GameOver
+from Game import Board, BOARD_SIZE, LEFT, RIGHT, UP, DOWN, GameOver
 
 import pygame
 
@@ -19,11 +19,12 @@ class SnakeInterface:
     def run(self):
         """Game loop"""
         pygame.init()
-        self._surface = pygame.display.set_mode((1000, 1000), pygame.RESIZABLE)
+        clock = pygame.time.Clock()
+        self._surface = pygame.display.set_mode((600, 600), pygame.RESIZABLE)
 
         try:
             while self._running:
-                self._clock.tick(self._frame_rate)
+                clock.tick(2)
                 self._no_keys_pressed = True
 
                 # handles various events in PyGame
@@ -32,7 +33,7 @@ class SnakeInterface:
                         self._running = False
                     elif event.type == pygame.KEYDOWN and not self._game_over:
                         self._no_keys_pressed = False
-                        self._handle_keys()
+                        self._handle_keys(event)
 
                 # snake moves forward if no keys are pressed
                 if self._no_keys_pressed:
@@ -48,20 +49,20 @@ class SnakeInterface:
         finally:
             pygame.quit()
 
-    def _handle_keys(self):
+    def _handle_keys(self, event):
         """Handles key presses"""
         # gets whatever key was pressed
-        keys = pygame.key.get_pressed()
+        #keys = pygame.key.get_pressed()
 
         try:
-            if keys[pygame.K_LEFT]:
-                self._game.run(UP)
-            elif keys[pygame.K_RIGHT]:
-                self._game.run(DOWN)
-            elif keys[pygame.K_UP]:
-                self._game.run(LEFT)
-            elif keys[pygame.K_DOWN]:
-                self._game.run(RIGHT)
+            if event.key == pygame.K_LEFT:
+                self._game.run(1)
+            elif event.key == pygame.K_RIGHT:
+                self._game.run(2)
+            elif event.key == pygame.K_UP:
+                self._game.run(3)
+            elif event.key == pygame.K_DOWN:
+                self._game.run(4)
         except GameOver as g:
             self._game_over = True
             self._game_over_message = str(g)
@@ -75,7 +76,7 @@ class SnakeInterface:
         pygame.display.flip()
 
     def _draw_board(self):
-        """Draws board based on game state"""
+        """Draws board based on game state
         width = self._surface.get_width()
         height = self._surface.get_height()
         new_width = .05 * width
@@ -98,6 +99,17 @@ class SnakeInterface:
 
             x_ratio += .05
             y_ratio = .1
+        """
+        block_size = self._surface.get_width() / BOARD_SIZE - 30
+        for y in range(BOARD_SIZE):
+            for x in range(BOARD_SIZE):
+                rect = pygame.Rect(x * (block_size + 1), y * (block_size + 1), block_size, block_size)
+                if self._game.board[y][x].foodTile:
+                    pygame.draw.rect(self._surface, (255, 0, 0), rect)
+                elif self._game.board[y][x].snakeTile:
+                    pygame.draw.rect(self._surface, (0, 255, 0), rect)
+                else:
+                    pygame.draw.rect(self._surface, (0, 0, 0), rect)
 
     def _display_game_over(self):
         """Displays game over message"""
@@ -110,7 +122,7 @@ class SnakeInterface:
         new_y = y_ratio * height
         font = pygame.font.SysFont("comicsansms", fontsize)
         game_over_label = font.render(self._game_over_message, 1, (0, 0, 0))
-        self._surface.blit(game_over_label, (new_x, new_y))
+        self._surface.blit(game_over_label, (int(new_x), int(new_y)))
 
 
 if __name__ == '__main__':

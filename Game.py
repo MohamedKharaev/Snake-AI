@@ -24,7 +24,7 @@ class Board:
 	open_spaces = set()
 	snake = []
 	score = 1
-	direction = None
+	direction = UP
 
 	class Tile:
 		# Tile object used to represent each square on the board
@@ -142,11 +142,11 @@ class Board:
 
 
 # uncomment this block to run game logic in console; input numbers for direction
-# game = Board()
-"""
-while True:
-	num = eval(input())
-	game.run(num)
-	if game.won():
-		break
-"""
+if __name__ == "__main__":
+	game = Board()
+
+	while True:
+		num = eval(input())
+		game.run(num)
+		if game.won():
+			break
