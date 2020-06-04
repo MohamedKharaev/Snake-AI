@@ -23,6 +23,7 @@ class Board:
 	board = []
 	open_spaces = set()
 	snake = []
+	food = []
 	score = 1
 	direction = UP
 
@@ -85,6 +86,7 @@ class Board:
 		# Picks a random coordinate from the open_spaces set and places food there
 		coords = choice(list(self.open_spaces))
 		x, y = coords[0], coords[1]
+		self.food = [x, y]
 		self.board[x][y].makeFood()
 
 	def move_snake(self, delta):
@@ -139,6 +141,65 @@ class Board:
 				elif self.board[row][col].foodTile: print("X", end="")
 				else: print("O", end="")
 			print()
+		print(self.blocked_direction())
+		print(self.food_direction())
+		print(self.food_distance())
+
+
+
+	def blocked_direction(self):
+		"""Returns an array displaying which directions the snake is blocked in.
+		Array corresponds to [left, straight, right]. 0 = Not Blocked | 1 = Blocked."""
+		def check_block(x, y):
+			if (x, y) not in self.open_spaces:
+				return 1
+			return 0
+
+		x, y = self.snake[-1]
+
+		if self.direction == UP:
+			return [check_block(x, y-1), check_block(x-1, y), check_block(x, y+1)]
+		elif self.direction == LEFT:
+			return [check_block(x+1, y), check_block(x, y-1), check_block(x-1, y)]
+		elif self.direction == RIGHT:
+			return [check_block(x-1, y), check_block(x, y+1), check_block(x+1, y)]
+		else:
+			return [check_block(x, y+1), check_block(x+1, y), check_block(x, y-1)]
+
+	def food_distance(self):
+		"""Returns a float representing how many units away the food is using distance formula"""
+		x, y = self.snake[-1]
+		return ((((x - self.food[0]) ** 2) + ((y - self.food[1]) ** 2)) ** .5)
+
+	def food_direction(self):
+		"""Returns an array representing where the food is compared to the snake.
+		Output: [x, y]
+			x = -1: Food is Up
+			x =  0: Food is same row
+			x =  1: Food is Down
+			y = -1: Food is Left
+			y =  0: Food is same col
+			y =  1: Food is Right
+		"""
+
+		x, y = self.snake[-1]
+		output = [0, 0]
+
+		if x < self.food[0]:
+			output[0] = 1
+		elif x > self.food[0]:
+			output[0] = -1
+		else:
+			pass
+
+		if y < self.food[1]:
+			output[1] = 1
+		elif y > self.food[1]:
+			output[1] = -1
+		else:
+			pass
+
+		return output
 
 
 # uncomment this block to run game logic in console; input numbers for direction
