@@ -169,7 +169,7 @@ class Board:
 	def food_distance(self):
 		"""Returns a float representing how many units away the food is using distance formula"""
 		x, y = self.snake[-1]
-		return ((((x - self.food[0]) ** 2) + ((y - self.food[1]) ** 2)) ** .5)
+		return (((x - self.food[0]) ** 2) + ((y - self.food[1]) ** 2)) ** .5
 
 	def food_direction(self):
 		"""Returns an array representing where the food is compared to the snake.
