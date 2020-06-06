@@ -17,12 +17,12 @@ class SnakeNN:
         self.goal_steps = goal_steps
         self.lr = lr
         self.filename = filename
-        self.vector_dict = {
-            [-1, 0]: 0,
-            [0, 1]: 1,
-            [1, 0]: 2,
-            [0, -1]: 3
-        }
+        #self.vector_dict = {
+        #    [-1, 0]: 0,
+        #    [0, 1]: 1,
+        #    [1, 0]: 2,
+        #    [0, -1]: 3
+        #}
 
     def generate_population(self):
         training_data = []
@@ -73,7 +73,7 @@ class SnakeNN:
 
     def generate_observation(self, game):
         snake_direction = self.get_snake_direction_vector(game.snake)
-        food_direction = np.array(game.food) - np.array(game.snake)
+        food_direction = np.array(game.food) - np.array(game.snake[-1])
         blocked_directions = game.blocked_direction()
         angle = self.get_angle(snake_direction, food_direction)
         return np.array(blocked_directions + [angle])
@@ -90,9 +90,7 @@ class SnakeNN:
         return random.choice(directions)
 
     def get_snake_direction_vector(self, snake):
-        if len(snake) > 1:
-            return np.array(list(snake[0])) - np.array(list(snake[1]))
-        return np.array([0, 0])
+        return np.array(list(snake[-1])) - np.array(list(snake[-2]))
 
     def get_angle(self, x, y):
         x = x / np.linalg.norm(x)
