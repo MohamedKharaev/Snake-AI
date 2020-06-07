@@ -5,11 +5,14 @@ from tflearn.layers.estimator import regression
 
 import math
 import random
+import time
 from statistics import mean
 from collections import Counter
 
 from Game import Board, UP, DOWN, LEFT, RIGHT, GameOver
+from SnakeInterface import SnakeInterface
 
+import pygame
 
 class SnakeNN:
 
@@ -151,6 +154,37 @@ class SnakeNN:
         nn_model = self.train_nn_model(training_data, nn_model)
         self.test_model(nn_model)
 
+    def show_game(self):
+        nn_model = self.create_nn_model()
+        nn_model.load(self.filename)
+        self.show_game_gui(nn_model)
+
+    def show_game_gui(self, nn_model):
+        gui = SnakeInterface()
+        pygame.init()
+        prev_observation = self.generate_observation(gui._game)
+
+        for step in range(self.goal_steps):
+            for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        break
+            gui._draw_frame()
+            time.sleep(0.5)
+            precictions = []
+            for action in [-1, 0, 1]:
+               precictions.append(nn_model.predict(self.add_act_to_observ(prev_observation, action).reshape(-1, 5, 1)))
+            action = np.argmax(np.array(precictions)) - 1
+            game_action = self.generate_game_move(gui._game.snake, action)
+            try:
+                gui._game.run(game_action)
+                prev_observation = self.generate_observation(gui._game)
+            except:
+                break
+
 
 if __name__ == '__main__':
     SnakeNN().train()
+    #SnakeNN().show_game() 
+    #Run the program once to train the snake first. After that, comment out SnakeNN().train() and uncomment
+    #SnakeNN().show_game() to see gui.
