@@ -75,30 +75,7 @@ class SnakeInterface:
         pygame.display.flip()
 
     def _draw_board(self):
-        """Draws board based on game state
-        width = self._surface.get_width()
-        height = self._surface.get_height()
-        new_width = .05 * width
-        new_height = .05 * height
-        x_ratio = .35
-        y_ratio = .1
-
-        for row in self._game.board:
-            for col in row:
-                new_x = x_ratio * width
-                new_y = y_ratio * height
-
-                # draws green square for snake tiles and red square for food tiles
-                if col.foodTile:
-                    pygame.draw.rect(self._surface, (255, 0, 0), (new_x, new_y, new_width, new_height), 0)
-                elif col.snakeTile:
-                    pygame.draw.rect(self._surface, (0, 255, 0), (new_x, new_y, new_width, new_height), 0)
-
-                y_ratio += .05
-
-            x_ratio += .05
-            y_ratio = .1
-        """
+        """Draws board based on game state"""
         block_size = self._surface.get_width() / BOARD_SIZE - 30
         for y in range(BOARD_SIZE):
             for x in range(BOARD_SIZE):
