@@ -61,7 +61,7 @@ class Board:
 		self.make_board()
 		self.make_snake()
 		self.place_random_food()
-		self.render()
+		#self.render()
 
 	def run(self, direction=None):
 		# Meant to run the game until an error is thrown
@@ -70,7 +70,7 @@ class Board:
 		if direction in [LEFT, RIGHT, UP, DOWN] and direction != opposite[self.direction]:
 			self.direction = direction
 		self.move_snake(self.direction)
-		self.render()
+		#self.render()
 
 	def make_board(self):
 		# Initiates board full of Tile objects in correct size and initiates full open_space set
