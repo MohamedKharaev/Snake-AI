@@ -5,6 +5,8 @@ from tflearn.layers.estimator import regression
 
 import math
 import random
+from statistics import mean
+from collections import Counter
 
 from Game import Board, UP, DOWN, LEFT, RIGHT, GameOver
 
@@ -17,12 +19,12 @@ class SnakeNN:
         self.goal_steps = goal_steps
         self.lr = lr
         self.filename = filename
-        #self.vector_dict = {
-        #    [-1, 0]: 0,
-        #    [0, 1]: 1,
-        #    [1, 0]: 2,
-        #    [0, -1]: 3
-        #}
+        self.vectors_and_keys = [
+            [[-1, 0], UP],
+            [[0, 1], RIGHT],
+            [[1, 0], DOWN],
+            [[0, -1], LEFT]
+        ]
 
     def generate_population(self):
         training_data = []
@@ -30,46 +32,101 @@ class SnakeNN:
         for _ in range(self.initial_games):
             game = Board()
             prev_observation = self.generate_observation(game)
-            prev_food_distance = game.food_distance()
+            #prev_food_distance = game.food_distance()
+            prev_food_distance = np.linalg.norm(np.array(game.food) - np.array(game.snake[-1]))
             prev_score = game.score
 
             for _ in range(self.goal_steps):
-                direction = self.generate_direction(game.direction)
+                #direction = self.generate_direction(game.direction)
+                action, direction = self.generate_action(game.snake)
                 try:
                     game.run(direction)
-                    food_distance = game.food_distance()
+                    #food_distance = game.food_distance()
+                    food_distance = np.linalg.norm(np.array(game.food) - np.array(game.snake[-1]))
                     score = game.score
 
                     if score > prev_score or food_distance < prev_food_distance:
-                        training_data.append([self.add_action_to_observation(prev_observation, direction), 1])
+                        training_data.append([self.add_action_to_observation(prev_observation, action), 1])
                     else:
-                        training_data.append([self.add_action_to_observation(prev_observation, direction), 0])
+                        training_data.append([self.add_action_to_observation(prev_observation, action), 0])
 
                     prev_observation = self.generate_observation(game)
                     prev_food_distance = food_distance
-                    prev_score = score
+                    #prev_score = score
                 except GameOver as g:
                     if str(g) == "You Win":
-                        training_data.append([self.add_action_to_observation(prev_observation, direction), 1])
+                        training_data.append([self.add_action_to_observation(prev_observation, action), 1])
                     else:
-                        training_data.append([self.add_action_to_observation(prev_observation, direction), -1])
+                        training_data.append([self.add_action_to_observation(prev_observation, action), -1])
                     break
 
         return training_data
+
+    def generate_action(self, snake):
+        action = random.randint(0, 2) - 1
+        return action, self.generate_game_action(snake, action)
+
+    def generate_game_action(self, snake, action):
+        snake_direction = self.get_snake_direction_vector(snake)
+        new_direction = snake_direction
+        if action == -1:
+            new_direction = np.array([-snake_direction[1], snake_direction[0]])
+        elif action == 1:
+            new_direction = np.array([snake_direction[1], -snake_direction[0]])
+        for pair in self.vectors_and_keys:
+            if pair[0] == new_direction.tolist():
+                game_action = pair[1]
+                return game_action
 
     def create_model(self):
         network = input_data(shape=[None, 5, 1], name='input')
         network = fully_connected(network, 25, activation='relu')
         network = fully_connected(network, 1, activation='linear')
-        network = regression(network, optimizer='adam', learning_rate=self.lr, loss='mean_square', name='targets')
-        model = tflearn.DNN(network, tensorboard_dir='tflearn_logs')
+        network = regression(network, optimizer='adam', learning_rate=self.lr, loss='mean_square', name='target')
+        model = tflearn.DNN(network, tensorboard_dir='logs')
         return model
 
     def train_model(self, training_data, model):
+        x = np.reshape(np.array([i[0] for i in training_data]), (-1, 5, 1))
+        y = np.reshape(np.array([i[1] for i in training_data]), (-1, 1))
+        model.fit(x, y, n_epoch=3, shuffle=True, run_id=self.filename)
+        model.save(self.filename)
         return model
 
     def test_model(self, model):
-        pass
+        steps_list = []
+        scores_list = []
+
+        for _ in range(self.test_games):
+            steps = 0
+            game = Board()
+            prev_observation = self.generate_observation(game)
+
+            for _ in range(self.goal_steps):
+                predictions = []
+                for action in range(-1, 2):
+                    predictions.append(model.predict(np.reshape(self.add_action_to_observation(prev_observation, action), (-1, 5, 1))))
+                action = np.argmax(np.array(predictions))
+                game_action = self.generate_game_action(game.snake, action - 1)
+                try:
+                    game.run(game_action)
+                    prev_observation = self.generate_observation(game)
+                    steps += 1
+                except GameOver as g:
+                    print(str(g))
+                    print(game.score)
+                    print(steps)
+                    print(prev_observation)
+                    print(predictions)
+                    break
+
+            steps_list.append(steps)
+            scores_list.append(game.score)
+
+        print('Average steps:', mean(steps_list))
+        print(Counter(steps_list))
+        print('Average score:', mean(scores_list))
+        print(Counter(scores_list))
 
     def generate_observation(self, game):
         snake_direction = self.get_snake_direction_vector(game.snake)

@@ -20,12 +20,12 @@ class Board:
 	# snake is a list containing coordinates of the snakes body in the order that they are meant to be
 	# score is self explanatory (should reflect size of snake)
 	# direction used to keep track of the last direction that the player is chose to move in
-	board = [] #list of lists(containing Tiles) 
+	'''board = [] #list of lists(containing Tiles)
 	open_spaces = set() #set of tuples
 	snake = [] #list of tuples, last element is where the head of the snake is.
 	food = [] #list of integers
 	score = 1
-	direction = UP
+	direction = UP'''
 
 	class Tile:
 		# Tile object used to represent each square on the board
@@ -52,6 +52,12 @@ class Board:
 			self.foodTile = False
 
 	def __init__(self):
+		self.board = []  # list of lists(containing Tiles)
+		self.open_spaces = set()  # set of tuples
+		self.snake = []  # list of tuples, last element is where the head of the snake is.
+		self.food = []  # list of integers
+		self.score = 1
+		self.direction = UP
 		self.make_board()
 		self.make_snake()
 		self.place_random_food()
