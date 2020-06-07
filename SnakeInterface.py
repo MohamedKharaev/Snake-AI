@@ -14,12 +14,13 @@ class SnakeInterface:
         self._game = Board()
         # self._frame_rate = 7 Perhaps we do not need this since we are using clock ticks?
         self._clock = pygame.time.Clock()
-        self._surface = None
+
+        self._surface = pygame.display.set_mode((600, 600), pygame.RESIZABLE)
 
     def run(self):
         """Game loop"""
         pygame.init()
-        self._surface = pygame.display.set_mode((600, 600), pygame.RESIZABLE)
+        #self._surface = pygame.display.set_mode((600, 600), pygame.RESIZABLE)
 
         try:
             while self._running:
@@ -76,7 +77,7 @@ class SnakeInterface:
 
     def _draw_board(self):
         """Draws board based on game state"""
-        block_size = self._surface.get_width() / BOARD_SIZE - 30
+        block_size = self._surface.get_width() / BOARD_SIZE - 5
         for y in range(BOARD_SIZE):
             for x in range(BOARD_SIZE):
                 rect = pygame.Rect(x * (block_size + 1), y * (block_size + 1), block_size, block_size)
